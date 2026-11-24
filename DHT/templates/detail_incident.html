@@ -1,0 +1,220 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Détail incident #{{ incident.id }}{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <section class="welcome">
+        <div>
+            <span class="eyebrow">SUIVI DES INCIDENTS</span>
+            <h2>Détails de l'incident #{{ incident.id }}</h2>
+            <p>Historique complet des alertes et des interventions.</p>
+        </div>
+
+        <a class="primary-button" href="{% url 'historique_incidents' %}">
+            ← Retour aux archives
+        </a>
+    </section>
+
+    <!-- INFORMATIONS GENERALES -->
+
+    <section class="dashboard-panel">
+        <h3>Informations générales</h3>
+
+        <div class="reception-info">
+            <div>
+                <span>Date de début</span>
+                <strong>{{ incident.started_at|date:"d/m/Y à H:i:s" }}</strong>
+            </div>
+
+            <div>
+                <span>Date de fin</span>
+                <strong>
+                    {% if incident.ended_at %}
+                        {{ incident.ended_at|date:"d/m/Y à H:i:s" }}
+                    {% else %}
+                        Non terminé
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div>
+                <span>Compteurs d'alertes</span>
+                <strong>{{ incident.alert_count }}</strong>
+            </div>
+
+            <div>
+                <span>Température initiale</span>
+                <strong>{{ incident.start_temperature }} °C</strong>
+            </div>
+
+            <div>
+                <span>Température maximale</span>
+                <strong>{{ incident.max_temperature }} °C</strong>
+            </div>
+
+            <div>
+                <span>État</span>
+                <strong>
+                    {% if incident.status == 'ACTIVE' %}
+                        En cours
+                    {% else %}
+                        Terminé
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOMBRE D'ALERTES PAR OPERATEUR -->
+
+    <section class="dashboard-panel">
+        <div class="panel-heading">
+            <h3>Nombre d'alertes par opérateur</h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>Opérateur</th>
+                        <th>Nombre d'alertes reçues</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in alertes_par_operateur %}
+                    <tr>
+                        <td>{{ item.operator__name }}</td>
+                        <td>{{ item.nombre_alertes }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">Aucune notification enregistrée.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- JOURNAL DES ALERTES -->
+
+    <section class="dashboard-panel">
+        <h3>Journal des alertes</h3>
+
+        <div class="table-responsive">
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>Compteur</th>
+                        <th>Température</th>
+                        <th>Date d'envoi</th>
+                        <th>Opérateur</th>
+                        <th>Email</th>
+                        <th>Telegram</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for notification in notifications %}
+                    <tr>
+                        <td>#{{ notification.alert.counter }}</td>
+                        <td>{{ notification.alert.temperature }} °C</td>
+                        <td>{{ notification.alert.sent_at|date:"d/m/Y H:i:s" }}</td>
+                        <td>{{ notification.operator.name }}</td>
+
+                        <td>
+                            {% if notification.email_sent %}
+                                Envoyé
+                            {% else %}
+                                Non envoyé
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if notification.telegram_sent %}
+                                Envoyé
+                            {% else %}
+                                Non envoyé
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Aucune alerte enregistrée.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- CONFIRMATIONS ET COMMENTAIRES -->
+
+    <section class="dashboard-panel">
+        <h3>Confirmations et commentaires des opérateurs</h3>
+
+        <div class="table-responsive">
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>Alerte</th>
+                        <th>Opérateur</th>
+                        <th>Confirmation</th>
+                        <th>Date de confirmation</th>
+                        <th>Commentaire</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for notification in notifications %}
+                    <tr>
+                        <td>#{{ notification.alert.counter }}</td>
+
+                        <td>{{ notification.operator.name }}</td>
+
+                        <td>
+                            {% if notification.acknowledged_at %}
+                                Confirmée
+                            {% else %}
+                                En attente
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if notification.acknowledged_at %}
+                                {{ notification.acknowledged_at|date:"d/m/Y à H:i:s" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if notification.operator_message %}
+                                {{ notification.operator_message|linebreaksbr }}
+                            {% else %}
+                                Aucun commentaire
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            Aucune réponse enregistrée.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

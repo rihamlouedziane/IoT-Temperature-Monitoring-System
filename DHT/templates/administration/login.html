@@ -1,0 +1,25 @@
+ {% extends 'base.html' %}
+
+{% block title %}Connexion administrateur{% endblock %}
+
+{% block content %}
+<div class="admin-auth">
+    <div class="admin-card">
+        <h2>Connexion administrateur</h2>
+        <p>Connectez-vous pour gérer les utilisateurs et les rôles.</p>
+
+        {% for message in messages %}
+            <p class="admin-message">{{ message }}</p>
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="admin-button">
+                Se connecter
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

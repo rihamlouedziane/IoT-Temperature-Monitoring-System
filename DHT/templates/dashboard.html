@@ -1,0 +1,191 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard IoT{% endblock %}
+
+{% block extra_head %}
+<meta http-equiv="refresh" content="5">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <!-- EN-TETE -->
+  <div class="welcome">
+    <div>
+        <span class="eyebrow">SURVEILLANCE EN TEMPS RÉEL</span>
+        <h2>Tableau de bord</h2>
+        <p>Surveillance intelligente du laboratoire.</p>
+    </div>
+
+    <div class="welcome-actions">
+        <a class="primary-button" href="{% url 'historique_incidents' %}">
+            Historique des incidents →
+        </a>
+
+        <a class="primary-button" href="{% url 'statistiques' %}">
+            Voir les statistiques →
+        </a>
+    </div>
+</div>
+
+    <!-- MESURES -->
+    <section class="measurement-grid">
+
+        <article class="measurement-card temperature-card">
+            <div class="card-top">
+                <span class="card-label">Température actuelle</span>
+                <span class="card-icon">🌡️</span>
+            </div>
+
+            <div class="measurement-value">
+                {% if mesure %}
+                    {{ mesure.temp|default_if_none:"--" }}
+                {% else %}
+                    --
+                {% endif %}
+                <small>°C</small>
+            </div>
+
+            <p class="measurement-description">
+                Dernière température enregistrée
+            </p>
+        </article>
+
+        <article class="measurement-card humidity-card">
+            <div class="card-top">
+                <span class="card-label">Humidité actuelle</span>
+                <span class="card-icon">💧</span>
+            </div>
+
+            <div class="measurement-value">
+                {% if mesure %}
+                    {{ mesure.hum|default_if_none:"--" }}
+                {% else %}
+                    --
+                {% endif %}
+                <small>%</small>
+            </div>
+
+            <p class="measurement-description">
+                Dernière humidité enregistrée
+            </p>
+        </article>
+
+    </section>
+
+    <!-- ETAT DU LABORATOIRE -->
+    {% if incident_actif %}
+
+        <section class="lab-status status-danger">
+            <div>
+                <h3>🚨 Incident en cours</h3>
+                <p>Une température anormale a été détectée.</p>
+            </div>
+            <span class="status-badge danger-badge">ALERTE ACTIVE</span>
+        </section>
+
+    {% else %}
+
+        <section class="lab-status status-normal">
+            <div>
+                <h3>✓ Laboratoire normal</h3>
+                <p>Aucun incident actif actuellement.</p>
+            </div>
+            <span class="status-badge normal-badge">NORMAL</span>
+        </section>
+
+    {% endif %}
+
+    <!-- INCIDENT ACTIF -->
+    {% if incident_actif %}
+
+        <section class="dashboard-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">SURVEILLANCE DES INCIDENTS</span>
+                    <h3>Incident #{{ incident_actif.id }}</h3>
+                </div>
+                <span class="status-badge danger-badge">EN COURS</span>
+            </div>
+
+            <div class="incident-grid">
+
+                <article class="incident-stat">
+                    <span>Nombre d'alertes</span>
+                    <strong>{{ incident_actif.alert_count }}</strong>
+                </article>
+
+                <article class="incident-stat">
+                    <span>Température de départ</span>
+                    <strong>{{ incident_actif.start_temperature }} °C</strong>
+                </article>
+
+                <article class="incident-stat">
+                    <span>Température maximale</span>
+                    <strong>{{ incident_actif.max_temperature }} °C</strong>
+                </article>
+
+            </div>
+
+            <div class="incident-details">
+                <p>
+                    <strong>Début :</strong>
+                    {{ incident_actif.started_at|date:"d/m/Y à H:i:s" }}
+                </p>
+
+                <p>
+                    <strong>Prochaine alerte :</strong>
+
+                    {% if incident_actif.next_alert_at %}
+                        {{ incident_actif.next_alert_at|date:"d/m/Y à H:i:s" }}
+                    {% else %}
+                        En attente
+                    {% endif %}
+                </p>
+            </div>
+
+        </section>
+
+    {% endif %}
+
+    <!-- DERNIERE MESURE -->
+    <section class="dashboard-panel">
+
+        <div class="panel-heading">
+            <h3>📡 Dernière réception du capteur</h3>
+        </div>
+
+        {% if mesure %}
+            <div class="reception-info">
+                <div>
+                    <span>Date de réception</span>
+                    <strong>{{ mesure.dt|date:"d/m/Y à H:i:s" }}</strong>
+                </div>
+
+                <div>
+                    <span>Dernière mise à jour</span>
+                    <strong>Il y a {{ mesure.dt|timesince }}</strong>
+                </div>
+            </div>
+        {% else %}
+            <p class="empty-message">
+                En attente des données du capteur DHT11...
+            </p>
+        {% endif %}
+
+    </section>
+
+   
+
+    {% if mesure %}
+        <div class="dashboard-footer">
+            Dernière mesure : {{ mesure.dt|timesince }}
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

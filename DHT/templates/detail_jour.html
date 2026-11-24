@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Détails de la journée{% endblock %}
+
+{% block content %}
+
+<section class="welcome">
+    <div>
+        <span class="eyebrow">HISTORIQUE QUOTIDIEN</span>
+        <h2>Détails du {{ jour|date:"d/m/Y" }}</h2>
+        <p>Historique des mesures enregistrées pendant cette journée.</p>
+    </div>
+
+    <a href="{% url 'statistiques' %}" class="secondary-button">
+        ← Retour aux statistiques
+    </a>
+</section>
+
+<section class="summary-card">
+    <strong>{{ nombre_mesures }}</strong>
+    <span>Mesures enregistrées</span>
+</section>
+
+<section class="table-panel">
+    <h3>Historique des mesures</h3>
+
+    {% if mesures %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Heure</th>
+                    <th>Température</th>
+                    <th>Humidité</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for mesure in mesures %}
+                <tr>
+                    <td>{{ mesure.dt|date:"H:i:s" }}</td>
+                    <td class="temperature-text">
+                        {{ mesure.temp }} °C
+                    </td>
+                    <td class="humidity-text">
+                        {{ mesure.hum }} %
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="empty-message">
+            Aucune mesure enregistrée pour cette journée.
+        </p>
+    {% endif %}
+</section>
+
+{% endblock %}

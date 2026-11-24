@@ -1,0 +1,72 @@
+ {% extends 'base.html' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+<h2>Gestion des utilisateurs</h2>
+
+<a href="{% url 'admin_add_user' %}" class="admin-button">
+    Ajouter un utilisateur
+</a>
+
+<div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Nom complet</th>
+                <th>E-mail</th>
+                <th>Rôle(s)</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for utilisateur in utilisateurs %}
+            <tr>
+                <td>{{ utilisateur.username }}</td>
+
+                <td>
+                    {{ utilisateur.first_name }}
+                    {{ utilisateur.last_name }}
+                </td>
+
+                <td>{{ utilisateur.email }}</td>
+
+                <td>
+                    {% for role in utilisateur.groups.all %}
+                        {{ role.name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Aucun rôle
+                    {% endfor %}
+
+                    {% if utilisateur.is_superuser %}
+                        {% if utilisateur.groups.all %}
+                            ,
+                        {% endif %}
+                        Super administrateur
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if utilisateur.is_active %}
+                        Actif
+                    {% else %}
+                        Inactif
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Aucun utilisateur enregistré.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="user-form-page">
+<a href="{% url 'admin_dashboard' %}" class="form-back">
+        ← Retour aux utilisateurs
+</a>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réponse à l'alerte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        h2 { color: #dc2626; }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h2>🚨 Alerte laboratoire</h2>
+
+    <p><strong>Incident :</strong> #{{ delivery.alert.incident.id }}</p>
+    <p><strong>Température :</strong> {{ delivery.alert.temperature }} °C</p>
+    <p><strong>Numéro de l'alerte :</strong> {{ delivery.alert.counter }}</p>
+    <p><strong>Opérateur :</strong> {{ delivery.operator.name }}</p>
+
+    <hr>
+
+    {% if delivery.acknowledged_at %}
+        <p style="color:green;">
+            ✅ Vous avez déjà confirmé la réception.
+        </p>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+
+            <label for="message">
+                Votre message :
+            </label>
+
+            <textarea
+                id="message"
+                name="operator_message"
+                placeholder="Écrivez votre message ici..."
+            >{{ delivery.operator_message }}</textarea>
+
+            <button type="submit">
+                ✅ J'ai bien reçu l'alerte et envoyer ma réponse
+            </button>
+        </form>
+    {% endif %}
+
+</div>
+</body>
+</html>

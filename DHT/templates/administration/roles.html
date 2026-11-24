@@ -1,0 +1,36 @@
+ {% extends 'base.html' %}
+
+{% block title %}Gestion des rôles{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <h2>Créer un rôle</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="admin-button">
+            Créer le rôle
+        </button>
+    </form>
+</div>
+
+<div class="admin-card">
+    <h2>Rôles existants</h2>
+
+    <ul>
+        {% for role in roles %}
+            <li>{{ role.name }}</li>
+        {% empty %}
+            <li>Aucun rôle créé.</li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="user-form-page">
+<a href="{% url 'admin_dashboard' %}" class="form-back">
+        ← Retour aux utilisateurs
+</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+ {% extends 'base.html' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block content %}
+<h2>Espace administrateur</h2>
+<p>Bienvenue {{ request.user.username }}.</p>
+
+<div class="admin-stats">
+    <div class="admin-card">
+        <h3>Utilisateurs</h3>
+        <p class="admin-number">{{ nombre_utilisateurs }}</p>
+    </div>
+
+    <div class="admin-card">
+        <h3>Utilisateurs actifs</h3>
+        <p class="admin-number">{{ utilisateurs_actifs }}</p>
+    </div>
+
+    <div class="admin-card">
+        <h3>Rôles</h3>
+        <p class="admin-number">{{ nombre_roles }}</p>
+    </div>
+</div>
+
+<div class="admin-actions">
+    <a href="{% url 'admin_users' %}">Gérer les utilisateurs</a>
+    <a href="{% url 'admin_add_user' %}">Ajouter un utilisateur</a>
+    <a href="{% url 'admin_roles' %}">Gérer les rôles</a>
+</div>
+
+<form method="POST" action="{% url 'admin_logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="admin-button">
+        Déconnexion
+    </button>
+</form>
+
+{% endblock %}

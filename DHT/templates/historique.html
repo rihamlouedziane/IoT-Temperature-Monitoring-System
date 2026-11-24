@@ -1,0 +1,99 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Historique des incidents{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <section class="welcome">
+        <div>
+            <span class="eyebrow">SUIVI ET ARCHIVAGE</span>
+            <h2>Historique des incidents</h2>
+            <p>Consultez les incidents enregistrés et leurs détails.</p>
+        </div>
+
+        <a class="primary-button" href="{% url 'dashboard' %}">
+            ← Retour au dashboard
+        </a>
+    </section>
+
+    <section class="dashboard-panel">
+
+        <div class="panel-heading">
+            <h3>Liste des incidents</h3>
+            <span>{{ incidents|length }} incident(s)</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>Incident</th>
+                        <th>Date de début</th>
+                        <th>Date de fin</th>
+                        <th>Température maximale</th>
+                        <th>Compteurs</th>
+                        <th>État</th>
+                        <th>Détails</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for incident in incidents %}
+                    <tr>
+                        <td>#{{ incident.id }}</td>
+
+                        <td>
+                            {{ incident.started_at|date:"d/m/Y H:i" }}
+                        </td>
+
+                        <td>
+                            {% if incident.ended_at %}
+                                {{ incident.ended_at|date:"d/m/Y H:i" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>{{ incident.max_temperature }} °C</td>
+
+                        <td>{{ incident.alert_count }}</td>
+
+                        <td>
+                            {% if incident.status == 'ACTIVE' %}
+                                <span class="status-badge danger-badge">
+                                    En cours
+                                </span>
+                            {% else %}
+                                <span class="status-badge normal-badge">
+                                    Terminé
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a class="primary-button"
+                               href="{% url 'detail_incident' incident.id %}">
+                                Consulter →
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-message">
+                            Aucun incident enregistré.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
